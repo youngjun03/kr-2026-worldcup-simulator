@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 
 import { LineupBuilder } from "@/components/tactics/lineup-builder";
+import { LineupEvaluationCard } from "@/components/tactics/lineup-evaluation-card";
 import {
   ATTACK_STYLES,
   DEFENSE_STYLES,
@@ -228,6 +229,11 @@ export default function TacticsPage() {
                 />
               </div>
             </section>
+
+            <LineupEvaluationCard
+              formation={formation}
+              lineup={lineup}
+            />
 
             {/* 상대 분석 */}
             <section className="rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-6">
