@@ -1,4 +1,4 @@
-export type Formation = "4-2-3-1" | "4-3-3" | "3-4-3";
+export type Formation = "4-3-3" | "4-2-3-1" | "3-4-3";
 
 export type AttackStyle =
   | "빠른 역습"
@@ -37,7 +37,6 @@ export type PlayerPosition =
 export type Player = {
   id: string;
   name: string;
-  number: number;
   positions: PlayerPosition[];
 };
 
@@ -46,5 +45,6 @@ export type FormationSlot = {
   role: PlayerPosition;
   x: number;
   y: number;
-  playerId: string;
 };
+
+export type Lineup = Record<string, string | null>;
