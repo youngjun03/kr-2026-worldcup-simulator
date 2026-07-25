@@ -34,10 +34,26 @@ export type PlayerPosition =
   | "RW"
   | "ST";
 
+export type PlayerStats = {
+  pace: number;
+  shooting: number;
+  passing: number;
+  dribbling: number;
+  defending: number;
+  stamina: number;
+};
+
 export type Player = {
   id: string;
   name: string;
   positions: PlayerPosition[];
+  stats: PlayerStats;
+};
+
+export type TeamRating = PlayerStats & {
+  overall: number;
+  selectedCount: number;
+  isComplete: boolean;
 };
 
 export type FormationSlot = {

@@ -1,14 +1,38 @@
-import type { Player } from "@/types/game";
+import type {
+  Player,
+  PlayerStats,
+} from "@/types/game";
+
+type PlayerSeed = Omit<Player, "stats"> & {
+  stats?: PlayerStats;
+};
 
 /*
- * UI와 드래그 앤 드롭 구현을 위한 프로토타입 명단입니다.
- * 공식 2026 월드컵 최종 엔트리가 아닙니다.
+ * FC 능력치를 입력하지 않은 선수에게 적용되는 임시 값입니다.
+ * 실제 데이터를 입력하면 해당 선수의 stats가 우선 적용됩니다.
  */
-export const KOREA_PLAYERS: Player[] = [
+const TEMPORARY_STATS: PlayerStats = {
+  pace: 70,
+  shooting: 70,
+  passing: 70,
+  dribbling: 70,
+  defending: 70,
+  stamina: 70,
+};
+
+const PLAYER_SEEDS: PlayerSeed[] = [
   {
     id: "jo-hyeon-woo",
     name: "조현우",
     positions: ["GK"],
+    // stats: {
+    //   pace: 0,
+    //   shooting: 0,
+    //   passing: 0,
+    //   dribbling: 0,
+    //   defending: 0,
+    //   stamina: 0,
+    // },
   },
   {
     id: "kim-seung-gyu",
@@ -99,6 +123,13 @@ export const KOREA_PLAYERS: Player[] = [
     positions: ["RW", "LW"],
   },
 ];
+
+export const KOREA_PLAYERS: Player[] = PLAYER_SEEDS.map(
+  (player) => ({
+    ...player,
+    stats: player.stats ?? TEMPORARY_STATS,
+  }),
+);
 
 export const PLAYER_BY_ID = Object.fromEntries(
   KOREA_PLAYERS.map((player) => [player.id, player]),

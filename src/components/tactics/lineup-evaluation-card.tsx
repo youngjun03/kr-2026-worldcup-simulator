@@ -19,87 +19,58 @@ export function LineupEvaluationCard({
     lineup,
   );
 
-  const isComplete =
-    evaluation.selectedCount === 11;
-
   return (
     <section className="rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-6">
       <div className="flex items-start justify-between gap-4">
         <div>
           <p className="text-sm text-[var(--muted)]">
-            포지션 적합도
+            포지션 배치
           </p>
 
           <h2 className="mt-2 text-xl font-semibold">
-            전술 적합도 분석
+            선수 적합도
           </h2>
         </div>
 
-        <span
-          className={`rounded-full px-3 py-1 text-sm font-semibold ${
-            isComplete
-              ? "bg-emerald-400/15 text-emerald-200"
-              : "bg-amber-400/15 text-amber-200"
-          }`}
-        >
+        <span className="rounded-full bg-[var(--surface-light)] px-3 py-1 text-sm font-semibold">
           {evaluation.selectedCount}/11
         </span>
       </div>
 
       <div className="mt-6 grid grid-cols-3 gap-3">
         <Metric
-          label="평균 적합도"
-          value={
-            evaluation.selectedCount > 0
-              ? `${evaluation.averageFit}`
-              : "-"
-          }
+          label="적합"
+          value={`${evaluation.fitCount}명`}
+          description="능력 100%"
         />
 
         <Metric
-          label="전술 페널티"
-          value={
-            evaluation.selectedCount > 0
-              ? `-${evaluation.tacticalPenalty}%`
-              : "-"
-          }
+          label="가능"
+          value={`${evaluation.possibleCount}명`}
+          description="능력 97%"
         />
 
         <Metric
-          label="부적합 선수"
-          value={`${evaluation.outOfPositionCount}명`}
+          label="부적합"
+          value={`${evaluation.unsuitableCount}명`}
+          description="능력 90%"
         />
       </div>
 
-      <div className="mt-6">
-        <div className="flex justify-between text-sm">
-          <span className="text-[var(--muted)]">
-            포지션 조화
-          </span>
+      <div className="mt-5 flex items-center justify-between rounded-xl border border-[var(--border)] bg-[var(--background)] p-4">
+        <span className="text-sm text-[var(--muted)]">
+          평균 능력 감소
+        </span>
 
-          <span className="font-semibold">
-            {evaluation.averageFit}/100
-          </span>
-        </div>
-
-        <div className="mt-2 h-2.5 overflow-hidden rounded-full bg-[var(--background)]">
-          <div
-            className="h-full rounded-full bg-emerald-400 transition-all"
-            style={{
-              width: `${evaluation.averageFit}%`,
-            }}
-          />
-        </div>
+        <span className="font-semibold">
+          -{evaluation.averageReduction}%
+        </span>
       </div>
 
       <p className="mt-5 text-sm leading-6 text-[var(--muted)]">
-        {evaluation.selectedCount === 0
-          ? "선수를 포메이션 슬롯에 배치하면 적합도를 계산합니다."
-          : evaluation.outOfPositionCount > 0
-            ? "포지션이 맞지 않는 선수가 있습니다. 해당 선수는 경기 시 능력치 감소가 적용됩니다."
-            : evaluation.tacticalPenalty > 0
-              ? "모든 선수가 포지션을 소화할 수 있지만 일부 선수에게 소폭의 능력치 감소가 적용됩니다."
-              : "모든 선수가 자신의 최적 포지션에 배치되어 있습니다."}
+        선수 개인 능력치는 배치된 포지션의 적합도에 따라
+        조정됩니다. 전술 선택은 이 능력치 계산에 포함되지
+        않습니다.
       </p>
     </section>
   );
@@ -108,11 +79,13 @@ export function LineupEvaluationCard({
 type MetricProps = {
   label: string;
   value: string;
+  description: string;
 };
 
 function Metric({
   label,
   value,
+  description,
 }: MetricProps) {
   return (
     <div className="rounded-xl border border-[var(--border)] bg-[var(--background)] p-3">
@@ -122,6 +95,10 @@ function Metric({
 
       <p className="mt-2 text-lg font-semibold">
         {value}
+      </p>
+
+      <p className="mt-1 text-[10px] text-[var(--muted)]">
+        {description}
       </p>
     </div>
   );

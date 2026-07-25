@@ -257,77 +257,79 @@ export function remapLineup(
 }
 
 export type PositionFitLevel =
-  | "perfect"
-  | "good"
+  | "fit"
   | "possible"
-  | "poor";
+  | "unsuitable";
 
 export type PositionFitResult = {
   score: number;
   level: PositionFitLevel;
-  label: string;
-  penalty: number;
+  label: "적합" | "가능" | "부적합";
+  multiplier: number;
+  reductionRate: number;
 };
 
 export type LineupEvaluation = {
   selectedCount: number;
-  averageFit: number;
-  tacticalPenalty: number;
-  outOfPositionCount: number;
+  fitCount: number;
+  possibleCount: number;
+  unsuitableCount: number;
+  averageReduction: number;
 };
 
 /**
- * 선수의 가능 포지션과 배치된 슬롯을 비교합니다.
+ * 포지션에 따른 선수 능력치 적용 비율을 반환합니다.
  *
- * penalty는 나중에 경기 시뮬레이션에서
- * 팀 능력치 감소 비율로 사용할 예정입니다.
+ * 적합: 100%
+ * 가능: 97%
+ * 부적합: 90%
  */
 export function getPositionFit(
   playerPositions: PlayerPosition[],
   targetRole: PlayerPosition,
 ): PositionFitResult {
-  const score = getCompatibilityScore(
+  /*
+   * 선수 데이터에 해당 포지션이 직접 등록되어 있으면 적합입니다.
+   */
+  if (playerPositions.includes(targetRole)) {
+    return {
+      score: 100,
+      level: "fit",
+      label: "적합",
+      multiplier: 1,
+      reductionRate: 0,
+    };
+  }
+
+  const compatibilityScore = getCompatibilityScore(
     playerPositions,
     targetRole,
   );
 
-  if (score === 100) {
+  /*
+   * 직접 등록된 포지션은 아니지만 호환 가능한 포지션입니다.
+   */
+  if (compatibilityScore >= 60) {
     return {
-      score,
-      level: "perfect",
-      label: "최적",
-      penalty: 0,
-    };
-  }
-
-  if (score >= 85) {
-    return {
-      score,
-      level: "good",
-      label: "적합",
-      penalty: 1,
-    };
-  }
-
-  if (score >= 60) {
-    return {
-      score,
+      score: compatibilityScore,
       level: "possible",
       label: "가능",
-      penalty: 3,
+      multiplier: 0.97,
+      reductionRate: 3,
     };
   }
 
   return {
-    score,
-    level: "poor",
+    score: compatibilityScore,
+    level: "unsuitable",
     label: "부적합",
-    penalty: 8,
+    multiplier: 0.9,
+    reductionRate: 10,
   };
 }
 
 /**
- * 현재 선발 전체의 포지션 적합도를 계산합니다.
+ * 현재 선발의 포지션 배치 상태를 평가합니다.
  */
 export function evaluateLineup(
   formation: Formation,
@@ -336,9 +338,10 @@ export function evaluateLineup(
   const slots = FORMATION_SLOTS[formation];
 
   let selectedCount = 0;
-  let totalFitScore = 0;
-  let tacticalPenalty = 0;
-  let outOfPositionCount = 0;
+  let fitCount = 0;
+  let possibleCount = 0;
+  let unsuitableCount = 0;
+  let totalMultiplier = 0;
 
   for (const slot of slots) {
     const playerId = lineup[slot.id];
@@ -359,23 +362,38 @@ export function evaluateLineup(
     );
 
     selectedCount += 1;
-    totalFitScore += fit.score;
-    tacticalPenalty += fit.penalty;
+    totalMultiplier += fit.multiplier;
 
-    if (fit.level === "poor") {
-      outOfPositionCount += 1;
+    if (fit.level === "fit") {
+      fitCount += 1;
+    }
+
+    if (fit.level === "possible") {
+      possibleCount += 1;
+    }
+
+    if (fit.level === "unsuitable") {
+      unsuitableCount += 1;
     }
   }
 
-  const averageFit =
+  const averageMultiplier =
     selectedCount > 0
-      ? Math.round(totalFitScore / selectedCount)
+      ? totalMultiplier / selectedCount
+      : 1;
+
+  const averageReduction =
+    selectedCount > 0
+      ? Number(
+          ((1 - averageMultiplier) * 100).toFixed(1),
+        )
       : 0;
 
   return {
     selectedCount,
-    averageFit,
-    tacticalPenalty: Math.min(tacticalPenalty, 30),
-    outOfPositionCount,
+    fitCount,
+    possibleCount,
+    unsuitableCount,
+    averageReduction,
   };
 }
