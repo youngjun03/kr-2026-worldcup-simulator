@@ -19,3 +19,32 @@ export type Tactics = {
   defenseStyle: DefenseStyle;
   defensiveLine: DefensiveLine;
 };
+
+export type PlayerPosition =
+  | "GK"
+  | "CB"
+  | "LB"
+  | "RB"
+  | "LWB"
+  | "RWB"
+  | "DM"
+  | "CM"
+  | "AM"
+  | "LW"
+  | "RW"
+  | "ST";
+
+export type Player = {
+  id: string;
+  name: string;
+  number: number;
+  positions: PlayerPosition[];
+};
+
+export type FormationSlot = {
+  id: string;
+  role: PlayerPosition;
+  x: number;
+  y: number;
+  playerId: string;
+};

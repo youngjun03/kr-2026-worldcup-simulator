@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { PitchBoard } from "@/components/tactics/pitch-board";
 
 import {
   ATTACK_STYLES,
@@ -79,7 +80,7 @@ export default function TacticsPage() {
                 <h2 className="text-xl font-semibold">선발 명단</h2>
 
                 <p className="mt-1 text-sm text-[var(--muted)]">
-                  선수 데이터와 배치 기능은 다음 단계에서 추가합니다.
+                  포메이션을 변경하면 선수 배치가 자동으로 조정됩니다.
                 </p>
               </div>
 
@@ -88,18 +89,8 @@ export default function TacticsPage() {
               </span>
             </div>
 
-            <div className="mt-6 flex min-h-[520px] items-center justify-center rounded-2xl border border-dashed border-[var(--border)] bg-[#0b3a22]">
-              <div className="text-center">
-                <p className="text-5xl">⚽</p>
-
-                <p className="mt-4 text-lg font-semibold">
-                  {formation} 전술 보드
-                </p>
-
-                <p className="mt-2 text-sm text-white/60">
-                  선택한 포메이션에 따라 선수 위치가 변경될 예정입니다.
-                </p>
-              </div>
+            <div className="mt-6">
+              <PitchBoard formation={formation} />
             </div>
           </section>
 
