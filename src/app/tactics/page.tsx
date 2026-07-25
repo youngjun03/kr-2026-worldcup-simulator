@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { LineupBuilder } from "@/components/tactics/lineup-builder";
 import { LineupEvaluationCard } from "@/components/tactics/lineup-evaluation-card";
 import { TeamRatingCard } from "@/components/tactics/team-rating-card";
+import { MatchPreviewCard } from "@/components/tactics/match-preview-card";
 import {
   ATTACK_STYLES,
   DEFENSE_STYLES,
@@ -237,6 +238,16 @@ export default function TacticsPage() {
             />
 
             <TeamRatingCard
+              formation={formation}
+              lineup={lineup}
+            />
+
+            <TeamRatingCard
+              formation={formation}
+              lineup={lineup}
+            />
+
+            <MatchPreviewCard
               formation={formation}
               lineup={lineup}
             />
