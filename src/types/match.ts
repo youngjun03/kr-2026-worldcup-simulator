@@ -2,6 +2,8 @@ import type {
   AttackStyle,
   DefenseStyle,
   DefensiveLine,
+  Formation,
+  Lineup,
 } from "@/types/game";
 
 export type TeamSide = "korea" | "opponent";
@@ -26,12 +28,6 @@ export type ShotOutcome =
   | "saved"
   | "goal";
 
-/**
- * 경기 시뮬레이션에서 사용하는 팀 단위 지표입니다.
- *
- * 선수 데이터에 있는 속도·슈팅·패스·드리블·수비·체력을
- * 경기 계산에 더 편한 형태로 변환한 값입니다.
- */
 export type MatchMetrics = {
   attack: number;
   midfield: number;
@@ -48,18 +44,19 @@ export type CalculatedMatchMetrics = MatchMetrics & {
   isComplete: boolean;
 };
 
+export type TeamTactics = {
+  attackStyle: AttackStyle;
+  defenseStyle: DefenseStyle;
+  defensiveLine: DefensiveLine;
+};
+
 export type OpponentProfile = {
   id: string;
   name: string;
   flag: string;
 
   metrics: MatchMetrics;
-
-  tactics: {
-    attackStyle: AttackStyle;
-    defenseStyle: DefenseStyle;
-    defensiveLine: DefensiveLine;
-  };
+  tactics: TeamTactics;
 
   strengths: string[];
   weaknesses: string[];
@@ -83,4 +80,31 @@ export type MatchEvent = {
   awayScore: number;
 
   reasons: string[];
+};
+
+export type MatchState = {
+  currentMinute: number;
+  homeScore: number;
+  awayScore: number;
+  eventIndex: number;
+};
+
+export type SimulateSegmentInput = {
+  seed: number;
+
+  segmentStart: number;
+  segmentEnd: number;
+
+  state: MatchState;
+
+  formation: Formation;
+  lineup: Lineup;
+  tactics: TeamTactics;
+
+  opponent: OpponentProfile;
+};
+
+export type SegmentSimulationResult = {
+  state: MatchState;
+  events: MatchEvent[];
 };
